@@ -8,8 +8,7 @@ abstract class FlutterUploaderException extends Equatable implements Exception {
 class FlutterUploaderUploadTaskNotFoundException
     extends FlutterUploaderException {}
 
-class FlutterUploaderInvalidCallException extends Equatable
-    implements FlutterUploaderException {
+class FlutterUploaderInvalidCallException extends FlutterUploaderException {
   final String? message;
 
   FlutterUploaderInvalidCallException(this.message);
