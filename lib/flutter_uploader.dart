@@ -20,3 +20,5 @@ part 'src/upload_task_progress.dart';
 part 'src/upload_task_response.dart';
 
 part 'src/upload_task_status.dart';
+
+part 'src/flutter_uploader_exceptions.dart';

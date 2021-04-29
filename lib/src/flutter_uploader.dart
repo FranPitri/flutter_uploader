@@ -95,6 +95,32 @@ class FlutterUploader {
     );
   }
 
+  /// Get the [UploadTaskStatus] for an upload task with the given [taskId]
+  Future<UploadTaskStatus> getStatus({required String taskId}) async {
+    final methodName = 'getStatus';
+    final params = {'taskId': taskId};
+    try {
+      final result = await _platform.invokeMethod<int>(methodName, params);
+      return UploadTaskStatus.from(result);
+    } on PlatformException catch (exception) {
+      final flutterUploaderException = _parsePlatformException(exception);
+      throw flutterUploaderException;
+    }
+  }
+
+  FlutterUploaderException _parsePlatformException(
+    PlatformException exception,
+  ) {
+    if (exception.code == 'task_not_found') {
+      return FlutterUploaderUploadTaskNotFoundException();
+    }
+    if (exception.code == 'invalid_call') {
+      return FlutterUploaderInvalidCallException(exception.message);
+    }
+
+    throw 'Unhandled PlatformException';
+  }
+
   /// Enqueues a new upload task described by [upload].
   ///
   /// See [MultipartFormDataUpload], [RawUpload] for available configuration.

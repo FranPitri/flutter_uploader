@@ -8,6 +8,7 @@ import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 import com.bluechilli.flutteruploader.plugin.StatusListener;
@@ -70,6 +71,9 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
       case "clearUploads":
         clearUploads(call, result);
         break;
+      case "getStatus":
+        getStatus(call, result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -83,6 +87,36 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
     }
 
     result.success(null);
+  }
+
+  private void getStatus(MethodCall call, MethodChannel.Result result) {
+    String taskIdArgument = call.argument("taskId");
+    if (taskIdArgument == null) {
+      result.error("invalid_call", "Invalid taskId call parameter passed", null);
+      return;
+    }
+    UUID taskId = UUID.fromString(taskIdArgument);
+    try {
+      WorkInfo.State state = WorkManager.getInstance(context)
+        .getWorkInfoById(taskId).get().getState();
+      UploadStatus status = null;
+      switch (state) {
+        case CANCELLED:
+          result.success(UploadStatus.CANCELED);
+        case ENQUEUED:
+          result.success(UploadStatus.ENQUEUED);
+        case FAILED:
+          result.success(UploadStatus.FAILED);
+        case RUNNING:
+          result.success(UploadStatus.RUNNING);
+        case SUCCEEDED:
+          result.success(UploadStatus.COMPLETE);
+        default:
+          result.success(UploadStatus.UNDEFINED);
+      }
+    } catch (Exception e) {
+      result.error("task_not_found", "No tasks with the given taskId were found", null);
+    }
   }
 
   private void enqueue(MethodCall call, MethodChannel.Result result) {
