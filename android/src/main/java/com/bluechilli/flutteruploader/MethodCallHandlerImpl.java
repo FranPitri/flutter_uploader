@@ -99,7 +99,6 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
     try {
       WorkInfo.State state = WorkManager.getInstance(context)
         .getWorkInfoById(taskId).get().getState();
-      UploadStatus status = null;
       switch (state) {
         case CANCELLED:
           result.success(UploadStatus.CANCELED);
