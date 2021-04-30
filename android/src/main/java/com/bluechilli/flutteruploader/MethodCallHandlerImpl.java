@@ -102,14 +102,19 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
       switch (state) {
         case CANCELLED:
           result.success(UploadStatus.CANCELED);
+          break;
         case ENQUEUED:
           result.success(UploadStatus.ENQUEUED);
+          break;
         case FAILED:
           result.success(UploadStatus.FAILED);
+          break;
         case RUNNING:
           result.success(UploadStatus.RUNNING);
+          break;
         case SUCCEEDED:
           result.success(UploadStatus.COMPLETE);
+          break;
         default:
           result.success(UploadStatus.UNDEFINED);
       }
