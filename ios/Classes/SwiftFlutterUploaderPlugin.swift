@@ -78,6 +78,8 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
             cancelMethodCall(call, result)
         case "cancelAll":
             cancelAllMethodCall(call, result)
+        case "getStatus":
+            getStatusMethodCall(call, result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -179,6 +181,15 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
         urlSessionUploader.cancelAllTasks()
 
         result(nil)
+    }
+    
+    private func getStatusMethodCall(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let args = call.arguments as! [String: Any?]
+        let taskId = args[Key.taskId] as! String
+
+        let status = urlSessionUploader.getStatusByTaskId(taskId, { (status) -> Void in
+            result(status)
+        })   
     }
 
     private func binaryUploadTaskWithURLWithCompletion(url: URL,

@@ -102,6 +102,36 @@ class URLSessionUploader: NSObject {
         }
     }
 
+    /// Gets current status id for the given task id
+    func getStatusByTaskId(_ taskId: String,_ callback: @escaping (_ state: Int?) -> Void) {
+        guard let session = session else {
+            callback(UploadTaskStatus.undefined.rawValue)
+            return
+        }
+
+        session.getTasksWithCompletionHandler { (_, uploadTasks, _) in
+            for uploadTask in uploadTasks {
+                if self.identifierForTask(uploadTask) == taskId {
+                    let state = uploadTask.state
+
+                    switch state {
+                        case .running:
+                            callback(UploadTaskStatus.running.rawValue)
+                        case .suspended:
+                            callback(UploadTaskStatus.paused.rawValue)
+                        case .canceling:
+                            callback(UploadTaskStatus.canceled.rawValue)
+                        case .completed:
+                            callback(UploadTaskStatus.completed.rawValue)
+                    }
+                    return
+                }
+            }
+            
+            callback(UploadTaskStatus.undefined.rawValue)
+        }
+    }
+
     // MARK: Private API
 
     private override init() {
